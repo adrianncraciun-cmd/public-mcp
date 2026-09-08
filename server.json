@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "top.comunicate/publishing",
+  "title": "Comunicate.top",
+  "description": "Publish press releases and advertorials on 3,800+ news sites: catalogue, prices, orders.",
+  "version": "1.0.1",
+  "websiteUrl": "https://comunicate.top/en/mcp",
+  "icons": [
+    {
+      "src": "https://comunicate.top/icon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": [
+        "any"
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://app.comunicate.top/mcp"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/adrianncraciun-cmd/public-mcp",
+    "source": "github",
+    "id": "1362015854"
+  }
+}
