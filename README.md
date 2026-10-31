@@ -58,10 +58,16 @@ On a paid plan, open **Settings → Connectors**, add a custom connector with th
 Use [Gemini CLI](https://github.com/google-gemini/gemini-cli):
 
 ```bash
+gemini extensions install https://github.com/adrianncraciun-cmd/public-mcp
+```
+
+Or add the server yourself:
+
+```bash
 gemini mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 ```
 
-Or add this to `~/.gemini/settings.json`:
+You can also add this to `~/.gemini/settings.json`:
 
 ```json
 {

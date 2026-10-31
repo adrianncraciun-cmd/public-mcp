@@ -58,10 +58,16 @@ Pe un plan plătit, deschide **Settings → Connectors**, adaugă un conector pe
 Folosește [Gemini CLI](https://github.com/google-gemini/gemini-cli):
 
 ```bash
+gemini extensions install https://github.com/adrianncraciun-cmd/public-mcp
+```
+
+Sau adaugă serverul manual:
+
+```bash
 gemini mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 ```
 
-Sau adaugă în `~/.gemini/settings.json`:
+Poți adăuga și în `~/.gemini/settings.json`:
 
 ```json
 {

@@ -1,0 +1,10 @@
+{
+  "name": "comunicate-eu",
+  "version": "1.8.8",
+  "description": "Find Romanian news sites, compare prices and plan press release or advertorial campaigns by budget.",
+  "mcpServers": {
+    "comunicate-eu": {
+      "httpUrl": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
