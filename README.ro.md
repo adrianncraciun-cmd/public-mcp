@@ -13,7 +13,8 @@ Prețurile sunt scrise în catalog și sunt aceleași pentru toți. Nu se cere o
 | Cu cont | Cheie de API sau OAuth 2.1 cu PKCE, pentru asistenții aprobați |
 | OpenAPI 3.1 | <https://comunicate.eu/openapi.json> |
 | APIs.json | <https://comunicate.eu/apis.json> |
-| Documentație | <https://comunicate.eu/ro/documentatie-api> |
+| Documentație API | <https://comunicate.eu/ro/documentatie-api> |
+| Ghid MCP | <https://comunicate.eu/ro/mcp> |
 | API public, fără cheie | `https://app.comunicate.eu/api/v1/public/*` |
 
 ---

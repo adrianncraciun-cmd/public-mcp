@@ -13,7 +13,8 @@ Prices are printed in the catalogue and are the same for everyone. There is no r
 | With an account | API key, or OAuth 2.1 with PKCE for approved assistants |
 | OpenAPI 3.1 | <https://comunicate.eu/openapi.json> |
 | APIs.json | <https://comunicate.eu/apis.json> |
-| Docs | <https://comunicate.eu/en/documentatie-api> |
+| API docs | <https://comunicate.eu/en/documentatie-api> |
+| MCP guide | <https://comunicate.eu/en/mcp> |
 | Public API, no key | `https://app.comunicate.eu/api/v1/public/*` |
 
 ---
