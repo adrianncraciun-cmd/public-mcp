@@ -50,7 +50,7 @@ Deschide **Settings → Apps & Connectors → Advanced**, pornește **Developer 
 
 ### Perplexity
 
-Pe un plan plătit, deschide **Settings → Connectors**, adaugă un conector personalizat cu adresa serverului și transportul Streamable HTTP, apoi alege fără autentificare pentru citirea catalogului. Pentru acțiuni în cont, folosește o cheie de API, dacă planul tău are această opțiune.
+Pe un plan plătit, deschide **Settings → Connectors**, adaugă un conector personalizat cu adresa serverului și transportul Streamable HTTP, apoi alege fără autentificare pentru citirea catalogului sau OAuth ca să lucrezi în cont.
 
 ### Gemini
 
@@ -109,7 +109,7 @@ Emite o cheie de API din *Integrări* și trimite-o ca bearer token. Cheia leag�
 
 ### OAuth
 
-Claude, ChatGPT, Zapier, Make, Glama și clienții care rulează pe calculatorul tău se pot conecta prin OAuth 2.1 (PKCE S256) și aprobi conectarea în browser. Codurile de autorizare pleacă doar spre acești clienți aprobați. Orice alt client folosește o cheie de API.
+Claude, ChatGPT, Perplexity, Zapier, Make, Glama și clienții care rulează pe calculatorul tău se pot conecta prin OAuth 2.1 (PKCE S256) și aprobi conectarea în browser. Codurile de autorizare pleacă doar spre acești clienți aprobați. Orice alt client folosește o cheie de API.
 
 ---
 

@@ -50,7 +50,7 @@ Open **Settings → Apps & Connectors → Advanced** and turn on **Developer mod
 
 ### Perplexity
 
-On a paid plan, open **Settings → Connectors**, add a custom connector with the server address and the Streamable HTTP transport, and choose no authentication to read the catalogue. For account actions, use an API key if your plan offers that option.
+On a paid plan, open **Settings → Connectors**, add a custom connector with the server address and the Streamable HTTP transport, and choose no authentication to read the catalogue, or OAuth to work in your account.
 
 ### Gemini
 
@@ -109,7 +109,7 @@ Issue an API key under *Integrations* and send it as a bearer token. The key tie
 
 ### OAuth
 
-Claude, ChatGPT, Zapier, Make, Glama and clients running on your own machine can connect with OAuth 2.1 (PKCE S256) and approve the connection in the browser. Authorization codes go only to these approved clients. Any other client uses an API key.
+Claude, ChatGPT, Perplexity, Zapier, Make, Glama and clients running on your own machine can connect with OAuth 2.1 (PKCE S256) and approve the connection in the browser. Authorization codes go only to these approved clients. Any other client uses an API key.
 
 An account tool called without credentials returns `401` with:
 
