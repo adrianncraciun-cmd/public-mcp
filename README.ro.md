@@ -36,13 +36,49 @@ Merg fără cont:
 
 Pentru conectare și pentru citirea catalogului nu ai nevoie de cheie sau de cont.
 
-**Claude Code**
+**Adresa serverului:** `https://app.comunicate.eu/mcp`
+
+Meniurile și limitele planurilor se schimbă des, deci verifică paginile de ajutor ale asistentului dacă un pas arată altfel.
+
+### Claude
+
+Pe claude.ai sau în aplicația desktop, deschide **Settings → Connectors → Add custom connector**, numește conectorul `Comunicate.eu` și lipește adresa serverului. Pe planurile Team și Enterprise, un proprietar îl adaugă întâi pentru organizație.
+
+### ChatGPT
+
+Deschide **Settings → Apps & Connectors → Advanced**, pornește **Developer mode**, apoi creează un conector cu adresa serverului. Alege **No authentication** pentru citirea catalogului sau **OAuth** ca să lucrezi în cont. Disponibilitatea depinde de plan, iar pe Business sau Enterprise e posibil să trebuiască pornit de un administrator.
+
+### Perplexity
+
+Pe un plan plătit, deschide **Settings → Connectors**, adaugă un conector personalizat cu adresa serverului și transportul Streamable HTTP, apoi alege fără autentificare pentru citirea catalogului. Pentru acțiuni în cont, folosește o cheie de API, dacă planul tău are această opțiune.
+
+### Gemini
+
+Folosește [Gemini CLI](https://github.com/google-gemini/gemini-cli):
+
+```bash
+gemini mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
+```
+
+Sau adaugă în `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "httpUrl": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### Claude Code
 
 ```bash
 claude mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 ```
 
-**Claude Desktop, Cursor, VS Code și orice client care citește `mcpServers`**
+### Cursor, VS Code și orice client care citește `mcpServers`
 
 ```json
 {
@@ -55,7 +91,9 @@ claude mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 }
 ```
 
-**Cu cont.** Emite o cheie de API din *Integrări* și trimite-o ca bearer token. Cheia leagă serverul de organizația ta, deci poate vedea soldul, poate scrie ciorne și, dacă îi dai voie, poate comanda.
+### Cu cont
+
+Emite o cheie de API din *Integrări* și trimite-o ca bearer token. Cheia leagă serverul de organizația ta, deci poate vedea soldul, poate scrie ciorne și, dacă îi dai voie, poate comanda.
 
 ```json
 {
@@ -69,7 +107,9 @@ claude mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 }
 ```
 
-**OAuth.** Claude, ChatGPT, Zapier, Make, Glama și clienții care rulează pe calculatorul tău se pot conecta prin OAuth 2.1 (PKCE S256) și aprobi conectarea în browser. Codurile de autorizare pleacă doar spre acești clienți aprobați. Orice alt client folosește o cheie de API.
+### OAuth
+
+Claude, ChatGPT, Zapier, Make, Glama și clienții care rulează pe calculatorul tău se pot conecta prin OAuth 2.1 (PKCE S256) și aprobi conectarea în browser. Codurile de autorizare pleacă doar spre acești clienți aprobați. Orice alt client folosește o cheie de API.
 
 ---
 

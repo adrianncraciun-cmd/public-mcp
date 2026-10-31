@@ -36,13 +36,49 @@ These work with no account:
 
 No key and no sign-in are needed to connect or to read the catalogue.
 
-**Claude Code**
+**Server address:** `https://app.comunicate.eu/mcp`
+
+Menus and plan limits change often, so check your assistant's help pages if a step looks different.
+
+### Claude
+
+On claude.ai or in the desktop app, open **Settings → Connectors → Add custom connector**, name it `Comunicate.eu` and paste the server address. On Team and Enterprise plans, an owner adds it for the organisation first.
+
+### ChatGPT
+
+Open **Settings → Apps & Connectors → Advanced** and turn on **Developer mode**, then create a connector with the server address. Choose **No authentication** to read the catalogue, or **OAuth** to work in your account. Availability depends on your plan, and on Business or Enterprise an admin may have to enable it.
+
+### Perplexity
+
+On a paid plan, open **Settings → Connectors**, add a custom connector with the server address and the Streamable HTTP transport, and choose no authentication to read the catalogue. For account actions, use an API key if your plan offers that option.
+
+### Gemini
+
+Use [Gemini CLI](https://github.com/google-gemini/gemini-cli):
+
+```bash
+gemini mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
+```
+
+Or add this to `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "httpUrl": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### Claude Code
 
 ```bash
 claude mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 ```
 
-**Claude Desktop, Cursor, VS Code and anything else that reads `mcpServers`**
+### Cursor, VS Code and anything else that reads `mcpServers`
 
 ```json
 {
@@ -55,7 +91,9 @@ claude mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 }
 ```
 
-**With an account.** Issue an API key under *Integrations* and send it as a bearer token. The key ties the server to your organisation, so it can see the balance, write drafts and, if you allow it, place orders.
+### With an account
+
+Issue an API key under *Integrations* and send it as a bearer token. The key ties the server to your organisation, so it can see the balance, write drafts and, if you allow it, place orders.
 
 ```json
 {
@@ -69,7 +107,9 @@ claude mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 }
 ```
 
-**OAuth.** Claude, ChatGPT, Zapier, Make, Glama and clients running on your own machine can connect with OAuth 2.1 (PKCE S256) and approve the connection in the browser. Authorization codes go only to these approved clients. Any other client uses an API key.
+### OAuth
+
+Claude, ChatGPT, Zapier, Make, Glama and clients running on your own machine can connect with OAuth 2.1 (PKCE S256) and approve the connection in the browser. Authorization codes go only to these approved clients. Any other client uses an API key.
 
 An account tool called without credentials returns `401` with:
 
