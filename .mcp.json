@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "comunicate-top": {
+    "comunicate-eu": {
       "type": "http",
-      "url": "https://app.comunicate.top/mcp"
+      "url": "https://app.comunicate.eu/mcp"
     }
   }
 }

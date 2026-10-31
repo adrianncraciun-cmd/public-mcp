@@ -1,34 +1,45 @@
-# Comunicate.top — MCP server & public API
+# Comunicate.eu — MCP server & public API
 
-Remote **MCP server** and **HTTP API** for [Comunicate.top](https://comunicate.top), a
-Romanian platform for publishing press releases, advertorials and SEO articles on a
-network of **3,800+ online publications** (Romania, Italy and other European markets).
+[Citește în română](README.ro.md)
 
-Prices and turnaround times are printed in the catalogue and are the same for everyone —
-there is no request-for-quote and no negotiation, so an assistant can read a price and
-act on it.
+Remote **MCP server** and **HTTP API** for [Comunicate.eu](https://comunicate.eu), a Romanian platform for publishing press releases, advertorials and SEO articles on a catalogue of **3,800+ online publications**, in Romania, Italy and other European markets.
+
+Prices are printed in the catalogue and are the same for everyone. There is no request for a quote and no negotiation, so an assistant can read a price and act on it.
 
 | | |
 |---|---|
-| MCP endpoint | `https://app.comunicate.top/mcp` (Streamable HTTP) |
-| Auth | OAuth 2.1 + PKCE, dynamic client registration — or an API key |
-| OpenAPI 3.1 | <https://comunicate.top/openapi.json> |
-| APIs.json | <https://comunicate.top/apis.json> |
-| Docs | <https://comunicate.top/en/documentatie-api> |
-| Free, no key | `https://app.comunicate.top/api/v1/public/*` |
+| MCP endpoint | `https://app.comunicate.eu/mcp` (Streamable HTTP) |
+| Without an account | Catalogue search, budget plans, niches, campaign types |
+| With an account | API key, or OAuth 2.1 with PKCE for approved assistants |
+| OpenAPI 3.1 | <https://comunicate.eu/openapi.json> |
+| APIs.json | <https://comunicate.eu/apis.json> |
+| Docs | <https://comunicate.eu/en/documentatie-api> |
+| Public API, no key | `https://app.comunicate.eu/api/v1/public/*` |
 
 ---
 
-## Connect the MCP server
+## What you can ask
 
-The server speaks Streamable HTTP and authenticates with OAuth 2.1 (PKCE, S256).
-Clients register themselves — there is nothing to copy and paste, you just approve the
-connection in a browser window.
+These work with no account:
+
+1. How much does an advertorial cost on a Romanian news site?
+2. I run a travel site and have 500 lei. Where can I publish 5 articles with dofollow backlinks?
+3. I run a dental clinic in Cluj and have a budget of 2,000 lei. Which sites do you recommend?
+4. I run an online furniture shop. How do I run a backlink campaign with 1,000 lei?
+5. Where can I publish a press release online, and what must it contain to be accepted?
+6. Which travel sites accept advertorials, and which are the cheapest?
+7. How can an NGO publish free press releases in the online press?
+
+---
+
+## Connect
+
+No key and no sign-in are needed to connect or to read the catalogue.
 
 **Claude Code**
 
 ```bash
-claude mcp add --transport http comunicate-top https://app.comunicate.top/mcp
+claude mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 ```
 
 **Claude Desktop, Cursor, VS Code and anything else that reads `mcpServers`**
@@ -36,111 +47,114 @@ claude mcp add --transport http comunicate-top https://app.comunicate.top/mcp
 ```json
 {
   "mcpServers": {
-    "comunicate-top": {
+    "comunicate-eu": {
       "type": "http",
-      "url": "https://app.comunicate.top/mcp"
+      "url": "https://app.comunicate.eu/mcp"
     }
   }
 }
 ```
 
-**With an API key instead of OAuth** (for CI, or a client without OAuth support): issue a
-key under *Integrations* in your account and send it as a bearer token.
+**With an account.** Issue an API key under *Integrations* and send it as a bearer token. The key ties the server to your organisation, so it can see the balance, write drafts and, if you allow it, place orders.
 
 ```json
 {
   "mcpServers": {
-    "comunicate-top": {
+    "comunicate-eu": {
       "type": "http",
-      "url": "https://app.comunicate.top/mcp",
+      "url": "https://app.comunicate.eu/mcp",
       "headers": { "Authorization": "Bearer bk_live_…" }
     }
   }
 }
 ```
 
-OAuth discovery follows RFC 9728: an unauthenticated request returns `401` with
-`WWW-Authenticate: Bearer resource_metadata="https://app.comunicate.top/.well-known/oauth-protected-resource/mcp"`.
+**OAuth.** Claude, ChatGPT, Zapier, Make, Glama and clients running on your own machine can connect with OAuth 2.1 (PKCE S256) and approve the connection in the browser. Authorization codes go only to these approved clients. Any other client uses an API key.
 
-### Tools
+An account tool called without credentials returns `401` with:
 
-Twenty tools, in the order you would normally call them.
+```
+WWW-Authenticate: Bearer resource_metadata="https://app.comunicate.eu/.well-known/oauth-protected-resource/mcp"
+```
+
+---
+
+## Tools
+
+Twenty-seven tools.
+
+**No account needed**
 
 | Tool | What it does |
 |---|---|
-| `whoami` | The organisation behind the key, its permissions, and whether assistants are allowed to order and publish. Call it first. |
-| `get_balance` | Credits per package and the cash balance. |
-| `search_catalog` | Search the network: niche, language, authority, price, turnaround. |
-| `get_site` | One publication in full: price per campaign type, rules, turnaround. |
+| `how_it_works` | How publishing works, subscriptions, payment, and the free programme for NGOs and institutions. |
+| `plan_budget` | Packages for a budget, by niche, topic and city, with totals with and without VAT. Call it again with `exclude` for other options. |
+| `search_catalog` | Search the catalogue by text, niche, campaign type, authority and price. |
+| `get_site` | One publication: price and links per campaign type, rules and conditions. |
+| `catalog_stats` | How many publications and niches the catalogue has. |
+| `list_niches` / `get_niche` | The niches, with descriptions and examples. |
 | `list_campaign_types` | What each campaign type means and what the text must or must not contain. |
+| `list_own_network` / `get_own_publication` | The Comunicate.eu network, on explicit request. |
+
+**Account needed**
+
+| Tool | What it does |
+|---|---|
+| `whoami` | The organisation behind the key and what it may do. |
+| `get_balance` | Credits per package and the cash balance. |
 | `list_articles` / `get_article` | The organisation's drafts and published articles. |
 | `create_article` / `update_article` | Write and revise a draft. |
-| `check_article_seo` | What the article still needs to pass publication checks. |
-| `check_article_fit` | Whether the text meets a campaign type's requirements. |
+| `check_article_seo` | How well the text is written as an SEO article. |
+| `check_article_fit` | Whether the text meets a campaign type's requirements and has no blanks left. |
 | `list_campaigns` / `create_campaign` / `update_campaign` | Editorial plans: goal, budget, allowed sites. |
 | `list_publications` / `get_publication` | Status and live URL of each publication. |
 | `order_publication` | Orders a publication. **Spends credits or money.** |
-| `order_writing` | Orders an article to be written. **Spends credits or money.** |
+| `order_writing` | Orders an article to be written. **Spends money.** |
 | `list_writing_orders` | Status of writing orders and delivered articles. |
-| `report_summary` | Publications, successes, failures, distinct sites, spend over a period. |
+| `report_summary` | Publications, sites and spend over a period. |
 
-Ordering is gated twice: the organisation has a switch for whether AI assistants may
-spend at all, and every order is checked against the balance before anything is written.
+Ordering is off by default. The organisation has a switch for whether AI assistants may spend, and it applies to OAuth tokens on the API as well. Every order is also checked against the balance.
 
 ---
 
-## Free public API — no key, no account
+## Public API
 
-Four read-only routes, open to anyone, CORS enabled. They are described in the same
-OpenAPI document as the rest of the API, with `security: []`.
+Read-only routes, open to anyone, with rate limits. They are described in the same OpenAPI document as the rest of the API, with `security: []`.
 
 ```bash
-# How big the network is
-curl 'https://app.comunicate.top/api/v1/public/stats'
-# → {"publications":3822,"niches":21}
+# Catalogue size
+curl 'https://app.comunicate.eu/api/v1/public/stats'
+# → {"publications":3809,"niches":22}
 
-# The niches, with publication counts and average authority
-curl 'https://app.comunicate.top/api/v1/public/niches?locale=en'
+# Niches, with publication counts and average authority
+curl 'https://app.comunicate.eu/api/v1/public/niches?locale=en'
 
-# One niche, with sample publications: domain, DA, PA, turnaround, price, ad label
-curl 'https://app.comunicate.top/api/v1/public/niches/stiri?locale=en'
+# Catalogue search: at most 20 per page and the first 120 per search
+curl 'https://app.comunicate.eu/api/v1/public/catalog?niche=sanatate&campaign=PRESS_RELEASE&sort=PRICE_ASC&limit=5'
 
-# Market statistics: authority distribution, turnaround, price per campaign type
-curl 'https://app.comunicate.top/api/v1/public/statistici-piata'
+# Budget plan: packages for 1,000 lei in a niche and a city
+curl 'https://app.comunicate.eu/api/v1/public/plan?bugetLei=1000&nise=sanatate&zona=Cluj'
+
+# What each campaign type requires
+curl 'https://app.comunicate.eu/api/v1/public/campaign-types'
 ```
 
-There is deliberately **no public route that returns the whole publication list**, and no
-public route writes anything. Everything else — catalogue with prices, articles, orders,
-publications, campaigns, reports, webhooks — needs a key issued from an account.
+Prices are set by each publisher, in bani (1 leu = 100 bani), without VAT. VAT is 21%. A budget plan covers publication only, and we recommend a unique text for each publication. No public route writes anything. Articles, orders, campaigns, reports and webhooks need a key issued from an account.
 
 ---
 
-## Despre, pe scurt (RO)
+## Free programme for NGOs and institutions
 
-Comunicate.top publică advertoriale, comunicate de presă și articole SEO pe o rețea de
-peste 3.800 de publicații. Prețul și termenul fiecărei publicații sunt scrise în catalog,
-publice și identice pentru toți. Serverul MCP de mai sus le dă asistenților AI acces la
-catalog, la articole și la comenzi, cu OAuth și cu un comutator prin care organizația
-decide dacă asistenții au voie să cheltuiască. Rutele `/public/*` sunt gratuite, fără
-cheie și numai de citire.
-
-Documentație: <https://comunicate.top/ro/documentatie-api> ·
-Ce poate face serverul MCP: <https://comunicate.top/ro/mcp>
+NGOs, schools, universities, hospitals and city halls can publish public interest press releases for free through the [Comunicate de interes public](https://comunicate.eu/ro/comunicate-de-interes-public) programme: up to 8 publications a month, on 19 publications, with nofollow links. Commercial and electoral content is excluded.
 
 ---
 
 ## This repository
 
-Documentation and the registry manifest only — the platform itself is closed source.
-`server.json` is what is published to the [official MCP registry](https://registry.modelcontextprotocol.io)
-under the `top.comunicate` namespace, verified by the key at
-<https://comunicate.top/.well-known/mcp-registry-auth>.
+Documentation and the registry manifest only. The platform itself is closed source. `server.json` is what is published to the [official MCP registry](https://registry.modelcontextprotocol.io) under the `eu.comunicate` namespace, verified by the key at <https://comunicate.eu/.well-known/mcp-registry-auth>.
 
-Questions or bug reports about the API: [open an issue](https://github.com/adrianncraciun-cmd/public-mcp/issues) or write to
-contact@comunicate.top.
+Questions or bug reports about the API: [open an issue](https://github.com/adrianncraciun-cmd/public-mcp/issues) or write to contact@comunicate.eu.
 
 ## Licence
 
-The contents of this repository (documentation and manifest) are released under the MIT
-licence. Use of the API and the MCP server is governed by the
-[terms of service](https://comunicate.top/ro/legal/termeni).
+The contents of this repository (documentation and manifest) are released under the MIT licence. Use of the API and the MCP server is governed by the [terms of service](https://comunicate.eu/en/legal/termeni).
