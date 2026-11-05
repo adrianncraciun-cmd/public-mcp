@@ -1,0 +1,15 @@
+{
+  "name": "comunicate-eu",
+  "version": "1.8.9",
+  "description": "Find Romanian news sites, compare prices and plan press release or advertorial campaigns by budget.",
+  "author": {
+    "name": "ARC MEDIASOFT SRL",
+    "email": "contact@comunicate.eu",
+    "url": "https://comunicate.eu"
+  },
+  "homepage": "https://comunicate.eu/en/mcp",
+  "repository": "https://github.com/adrianncraciun-cmd/public-mcp",
+  "license": "MIT",
+  "keywords": ["mcp", "press-release", "advertorial", "seo", "romania", "publishing"],
+  "mcpServers": "./.mcp.json"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "comunicate-eu",
+  "displayName": "Comunicate.eu",
+  "version": "1.8.9",
+  "description": "Plan and publish press releases and advertorials on 3,800+ news sites.",
+  "author": {
+    "name": "ARC MEDIASOFT SRL",
+    "email": "contact@comunicate.eu"
+  },
+  "homepage": "https://comunicate.eu/en/mcp",
+  "repository": "https://github.com/adrianncraciun-cmd/public-mcp",
+  "license": "MIT",
+  "logo": "https://comunicate.eu/icoane/icon-512.png",
+  "keywords": ["press release", "advertorial", "seo", "backlinks", "romania", "pr", "mcp"],
+  "category": "integrations",
+  "tags": ["pr", "seo", "marketing", "mcp"],
+  "mcpServers": "./.mcp.json"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "comunicate-eu",
+  "owner": {
+    "name": "ARC MEDIASOFT SRL",
+    "email": "contact@comunicate.eu"
+  },
+  "metadata": {
+    "description": "Comunicate.eu: remote MCP server for publishing press releases and advertorials on 3,800+ news sites."
+  },
+  "plugins": [
+    {
+      "name": "comunicate-eu",
+      "source": "./",
+      "description": "Find Romanian news sites, compare prices and plan press release or advertorial campaigns by budget."
+    }
+  ]
+}
