@@ -85,7 +85,109 @@ Poți adăuga și în `~/.gemini/settings.json`:
 claude mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 ```
 
-### Cursor, VS Code și orice client care citește `mcpServers`
+Sau instalează-l ca plugin din acest depozit:
+
+```
+/plugin marketplace add adrianncraciun-cmd/public-mcp
+/plugin install comunicate-eu@comunicate-eu
+```
+
+### Codex
+
+```bash
+codex mcp add comunicate-eu --url https://app.comunicate.eu/mcp
+codex mcp login comunicate-eu
+```
+
+A doua comandă te conectează prin OAuth, pentru uneltele de cont. Sari peste ea dacă îți trebuie doar catalogul.
+
+### Cursor
+
+Adaugă în `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "type": "http",
+      "url": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### VS Code
+
+Rulează **MCP: Add Server** din Command Palette și lipește adresa serverului, sau adaugă-l pentru toate proiectele în `~/.copilot/mcp-config.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "type": "http",
+      "url": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+Pentru un singur proiect, `.vscode/mcp.json` folosește `servers`:
+
+```json
+{
+  "servers": {
+    "comunicate-eu": {
+      "type": "http",
+      "url": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### Windsurf
+
+Adaugă în `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "serverUrl": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### Devin Desktop, Devin CLI
+
+Adaugă în `~/.config/devin/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "url": "https://app.comunicate.eu/mcp",
+      "transport": "http"
+    }
+  }
+}
+```
+
+### Zed
+
+Adaugă în `settings.json` din Zed:
+
+```json
+{
+  "context_servers": {
+    "comunicate-eu": {
+      "url": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### Orice alt client care citește `mcpServers`
 
 ```json
 {
@@ -116,7 +218,17 @@ Emite o cheie de API din *Integrări* și trimite-o ca bearer token. Cheia leag�
 
 ### OAuth
 
-Claude, ChatGPT, Perplexity, Zapier, Make, Glama și clienții care rulează pe calculatorul tău se pot conecta prin OAuth 2.1 (PKCE S256) și aprobi conectarea în browser. Codurile de autorizare pleacă doar spre acești clienți aprobați. Orice alt client folosește o cheie de API.
+Claude, ChatGPT, Perplexity, VS Code, Cursor (pe desktop și pe web), Mistral Le Chat și Vibe, Raycast, Microsoft Copilot Studio, Coda, Zapier, Make și Glama se pot conecta prin OAuth 2.1 (PKCE S256), iar conectarea o aprobi în browser. Clienții care rulează pe calculatorul tău, cum sunt Claude Code, Codex, Gemini CLI, Zed, Goose și Cline, se conectează la fel, printr-o adresă locală. Codurile de autorizare pleacă doar spre acești clienți aprobați. Orice alt client folosește o cheie de API.
+
+---
+
+## Unde îl găsești
+
+- [Registrul oficial MCP](https://registry.modelcontextprotocol.io/v0.1/servers?search=eu.comunicate): `eu.comunicate/publishing`
+- [Glama](https://glama.ai/mcp/connectors/eu.comunicate/publishing)
+- [cursor.directory](https://cursor.directory/plugins/comunicatetop)
+- [mcptry](https://mcptry.com/servers/eu.comunicate/publishing)
+- Pluginul pentru Claude Code și extensia pentru Gemini CLI: acest depozit
 
 ---
 
@@ -192,7 +304,7 @@ ONG-urile, școlile, universitățile, spitalele și primăriile pot publica gra
 
 ## Acest depozit
 
-Conține doar documentația și manifestul pentru registru. Platforma nu e open source. `server.json` e publicat în [registrul oficial MCP](https://registry.modelcontextprotocol.io) sub spațiul `eu.comunicate`, verificat prin cheia de la <https://comunicate.eu/.well-known/mcp-registry-auth>.
+Conține doar documentația, manifestul pentru registru și manifestele de plugin pentru Claude Code, Cursor și Gemini CLI. Platforma nu e open source. `server.json` e publicat în [registrul oficial MCP](https://registry.modelcontextprotocol.io) sub spațiul `eu.comunicate`, verificat prin cheia de la <https://comunicate.eu/.well-known/mcp-registry-auth>.
 
 Întrebări sau probleme legate de API: [deschide un issue](https://github.com/adrianncraciun-cmd/public-mcp/issues) sau scrie la contact@comunicate.eu.
 

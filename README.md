@@ -85,7 +85,109 @@ You can also add this to `~/.gemini/settings.json`:
 claude mcp add --transport http comunicate-eu https://app.comunicate.eu/mcp
 ```
 
-### Cursor, VS Code and anything else that reads `mcpServers`
+Or install it as a plugin from this repository:
+
+```
+/plugin marketplace add adrianncraciun-cmd/public-mcp
+/plugin install comunicate-eu@comunicate-eu
+```
+
+### Codex
+
+```bash
+codex mcp add comunicate-eu --url https://app.comunicate.eu/mcp
+codex mcp login comunicate-eu
+```
+
+The second command signs you in with OAuth, for the account tools. Skip it if you only need the catalogue.
+
+### Cursor
+
+Add to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "type": "http",
+      "url": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### VS Code
+
+Run **MCP: Add Server** from the Command Palette and paste the server address, or add it for all projects to `~/.copilot/mcp-config.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "type": "http",
+      "url": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+For a single project, `.vscode/mcp.json` uses `servers` instead:
+
+```json
+{
+  "servers": {
+    "comunicate-eu": {
+      "type": "http",
+      "url": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### Windsurf
+
+Add to `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "serverUrl": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### Devin Desktop, Devin CLI
+
+Add to `~/.config/devin/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "comunicate-eu": {
+      "url": "https://app.comunicate.eu/mcp",
+      "transport": "http"
+    }
+  }
+}
+```
+
+### Zed
+
+Add to Zed's `settings.json`:
+
+```json
+{
+  "context_servers": {
+    "comunicate-eu": {
+      "url": "https://app.comunicate.eu/mcp"
+    }
+  }
+}
+```
+
+### Anything else that reads `mcpServers`
 
 ```json
 {
@@ -116,13 +218,23 @@ Issue an API key under *Integrations* and send it as a bearer token. The key tie
 
 ### OAuth
 
-Claude, ChatGPT, Perplexity, Zapier, Make, Glama and clients running on your own machine can connect with OAuth 2.1 (PKCE S256) and approve the connection in the browser. Authorization codes go only to these approved clients. Any other client uses an API key.
+Claude, ChatGPT, Perplexity, VS Code, Cursor (desktop and web), Mistral Le Chat and Vibe, Raycast, Microsoft Copilot Studio, Coda, Zapier, Make and Glama can connect with OAuth 2.1 (PKCE S256) and approve the connection in the browser. Clients that run on your own machine, such as Claude Code, Codex, Gemini CLI, Zed, Goose and Cline, sign in the same way through a local address. Authorization codes go only to these approved clients. Any other client uses an API key.
 
 An account tool called without credentials returns `401` with:
 
 ```
 WWW-Authenticate: Bearer resource_metadata="https://app.comunicate.eu/.well-known/oauth-protected-resource/mcp"
 ```
+
+---
+
+## Where to find it
+
+- [Official MCP registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=eu.comunicate): `eu.comunicate/publishing`
+- [Glama](https://glama.ai/mcp/connectors/eu.comunicate/publishing)
+- [cursor.directory](https://cursor.directory/plugins/comunicatetop)
+- [mcptry](https://mcptry.com/servers/eu.comunicate/publishing)
+- Claude Code plugin and Gemini CLI extension: this repository
 
 ---
 
@@ -198,7 +310,7 @@ NGOs, schools, universities, hospitals and city halls can publish public interes
 
 ## This repository
 
-Documentation and the registry manifest only. The platform itself is closed source. `server.json` is what is published to the [official MCP registry](https://registry.modelcontextprotocol.io) under the `eu.comunicate` namespace, verified by the key at <https://comunicate.eu/.well-known/mcp-registry-auth>.
+Documentation, the registry manifest and the plugin manifests for Claude Code, Cursor and Gemini CLI only. The platform itself is closed source. `server.json` is what is published to the [official MCP registry](https://registry.modelcontextprotocol.io) under the `eu.comunicate` namespace, verified by the key at <https://comunicate.eu/.well-known/mcp-registry-auth>.
 
 Questions or bug reports about the API: [open an issue](https://github.com/adrianncraciun-cmd/public-mcp/issues) or write to contact@comunicate.eu.
 
