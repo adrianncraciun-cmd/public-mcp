@@ -10,6 +10,15 @@
   "homepage": "https://comunicate.eu/en/mcp",
   "repository": "https://github.com/adrianncraciun-cmd/public-mcp",
   "license": "MIT",
-  "keywords": ["mcp", "press-release", "advertorial", "seo", "romania", "publishing"],
-  "mcpServers": "./.mcp.json"
+  "keywords": [
+    "mcp",
+    "press-release",
+    "advertorial",
+    "seo",
+    "romania",
+    "publishing"
+  ],
+  "mcpServers": "./.mcp.json",
+  "icon": "./.claude-plugin/icon.png",
+  "privacyPolicyUrl": "https://comunicate.eu/en/legal/confidentialitate"
 }
