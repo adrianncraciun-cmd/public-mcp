@@ -1,5 +1,10 @@
 # Comunicate.eu — server MCP și API public
 
+[![Glama](https://glama.ai/mcp/connectors/eu.comunicate/publishing/badges/score.svg)](https://glama.ai/mcp/connectors/eu.comunicate/publishing)
+[![mcp.market](https://mcp.market/badge/comunicate-publishing.svg)](https://mcp.market/server/comunicate-publishing)
+[![MCP Checkup](https://mcpcheckup.com/badge/comunicate-4742b0/publishing.svg)](https://mcpcheckup.com/check/comunicate-4742b0/publishing)
+[![Listed on PlugMCP](https://plugmcp.ai/api/badge/eu.comunicate-publishing.svg)](https://plugmcp.ai/mcp/eu.comunicate-publishing)
+
 [Read in English](README.md)
 
 **Server MCP** și **API HTTP** pentru [Comunicate.eu](https://comunicate.eu), platforma românească de publicare a comunicatelor de presă, advertorialelor și articolelor SEO, cu un catalog de **peste 3.800 de publicații online** din România, Italia și alte piețe europene.
@@ -268,6 +273,22 @@ Douăzeci și șapte de unelte.
 
 Comenzile sunt oprite implicit. Organizația are un comutator prin care decide dacă asistenții AI pot cheltui, valabil și pentru tokenurile OAuth folosite direct pe API. Fiecare comandă e verificată și față de sold.
 
+Fiecare unealtă declară un `outputSchema` și întoarce `structuredContent`, cu adnotări pentru citire, ștergere, idempotență și lume deschisă. Definițiile complete, exact cum le dă `tools/list`, sunt în [`tools.json`](tools.json).
+
+### Descoperire
+
+| | |
+|---|---|
+| Server card | <https://app.comunicate.eu/mcp/server-card> |
+| Catalog AI | <https://comunicate.eu/.well-known/ai-catalog.json> |
+| Descriere MCP | <https://comunicate.eu/.well-known/mcp.json> |
+| Autentificare pentru agenți | <https://comunicate.eu/auth.md> |
+| Skill pentru agenți | <https://comunicate.eu/.well-known/agent-skills/index.json> |
+| Catalog API (RFC 9727) | <https://comunicate.eu/.well-known/api-catalog> |
+| Rezumat pentru LLM-uri | <https://comunicate.eu/llms.txt> |
+| Pagini în Markdown | orice pagină cu `Accept: text/markdown`, sau <https://comunicate.eu/index.md> |
+| DNS | `_agent.comunicate.eu` TXT (AID) |
+
 ---
 
 ## API public
@@ -334,9 +355,9 @@ ONG-urile, școlile, universitățile, spitalele și primăriile pot publica gra
 
 ## Acest depozit
 
-Conține doar documentația, manifestul pentru registru și manifestele de plugin pentru Claude Code, Cursor și Gemini CLI. Platforma nu e open source. `server.json` e publicat în [registrul oficial MCP](https://registry.modelcontextprotocol.io) sub spațiul `eu.comunicate`, verificat prin cheia de la <https://comunicate.eu/.well-known/mcp-registry-auth>.
+Conține doar documentația, manifestul pentru registru, definițiile uneltelor (`tools.json`) și manifestele de plugin pentru Claude Code, Cursor și Gemini CLI. Platforma nu e open source. `server.json` e publicat în [registrul oficial MCP](https://registry.modelcontextprotocol.io) sub spațiul `eu.comunicate`, verificat prin cheia de la <https://comunicate.eu/.well-known/mcp-registry-auth>.
 
-Întrebări sau probleme legate de API: [deschide un issue](https://github.com/adrianncraciun-cmd/public-mcp/issues) sau scrie la contact@comunicate.eu.
+Întrebări sau probleme legate de API: [deschide un issue](https://github.com/adrianncraciun-cmd/public-mcp/issues) sau scrie la contact@comunicate.eu. Raportări de securitate: vezi [SECURITY.md](SECURITY.md).
 
 ## Licență
 

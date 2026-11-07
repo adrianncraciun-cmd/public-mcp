@@ -1,0 +1,1676 @@
+{
+  "server": "eu.comunicate/publishing",
+  "version": "1.10.0",
+  "endpoint": "https://app.comunicate.eu/mcp",
+  "generatedFrom": "tools/list",
+  "tools": [
+    {
+      "name": "catalog_stats",
+      "title": "Cifrele catalogului",
+      "description": "Câte publicații sunt în catalog și alte cifre generale. Merge fără cont.\n\nUse when the user asks how big the catalogue is or wants headline figures. Do not use when looking for specific publications: use search_catalog or plan_budget.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "publications": {
+            "description": "number. Active publications in the catalogue."
+          },
+          "niches": {
+            "description": "number. Niches (topics)."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "list_niches",
+      "title": "Nișele",
+      "description": "Nișele catalogului, cu descriere și numărul de publicații. `publicationCount` numără toate limbile și tipurile de campanie, deci pe un tip și o limbă sunt mai puține. Merge fără cont.\n\nUse when you need the valid niche slugs or want to show the user which topics the catalogue covers. Do not use when you already know the niche: pass it directly to search_catalog or plan_budget.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "locale": {
+            "description": "Limba textelor: ro (implicit) sau en.",
+            "type": "string",
+            "enum": [
+              "ro",
+              "en"
+            ]
+          }
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "array of {slug, name, description, publicationCount, averageDa}. Pass `slug` as `niche` to other tools."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "get_niche",
+      "title": "O nișă",
+      "description": "Descrierea unei nișe și cele mai puternice 5 publicații din ea, cu id. Merge fără cont.\n\nUse when the user asks about one topic (what it covers, typical publications). Do not use when the user wants a priced selection for a budget: use plan_budget.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Slug sau nume de nișă (ex. sanatate, business)"
+          },
+          "locale": {
+            "description": "Limba textelor: ro (implicit) sau en.",
+            "type": "string",
+            "enum": [
+              "ro",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "slug"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "description": "string. Niche id."
+          },
+          "name": {
+            "description": "string"
+          },
+          "description": {
+            "description": "string"
+          },
+          "publicationCount": {
+            "description": "number"
+          },
+          "averageDa": {
+            "description": "number. Average Domain Authority."
+          },
+          "exemple": {
+            "description": "array. Sample Romanian publications: domain, DA, price, turnaround."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "plan_budget",
+      "title": "Plan pe buget",
+      "description": "Răspunde la „am 500 de lei, unde pot publica 5 articole?\" și „site-ul example.ro, unde mă promovez cu 1.000 de lei?\". Alege din tot catalogul, după nișă și subiect, și întoarce pachetele Mix recomandat, Premium și Economic, cu totalul cu și fără TVA. Fiecare publicație are `potrivire`: subiect (chiar în nume), zonă (publicație locală), nișă (specializată), rubrică (site general cu o rubrică pe tema asta), apropiată sau generală. `linkPolicy` apare doar când linkul nu e dofollow, deci nu transmite autoritate SEO. `refuzaTextAi`: publicația primește doar text rescris de un om. Lista `exclude` din răspuns, trimisă la un apel nou, dă alte publicații. Implicit folosește SEO și linkuri dofollow. Merge fără cont.\n\nUse when the user gives a budget, a number of articles or a website to promote and wants to know where to publish. Do not use when the user names a specific site (use get_site) or just browses (use search_catalog).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "bugetLei": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1000000,
+            "description": "Bugetul, în lei"
+          },
+          "articole": {
+            "description": "Câte articole. Lipsă: Mix și Premium cât încape, cel mult 15, Economic cel mult 20",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "website": {
+            "description": "Site-ul promovat (ex. example.ro); din el se deduce nișa",
+            "type": "string",
+            "maxLength": 200
+          },
+          "niche": {
+            "description": "Slug sau nume de nișă (ex. sanatate, business). Are întâietate față de site",
+            "type": "string",
+            "maxLength": 60
+          },
+          "alteNise": {
+            "description": "Nișe apropiate, când subiectul stă între două",
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 60
+            }
+          },
+          "cuvinte": {
+            "description": "Subiectul, cu variante, fără orașe: [\"stomatologie\",\"dentar\",\"dentist\"]. Publicațiile cu ele în nume au prioritate",
+            "maxItems": 8,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 40
+            }
+          },
+          "zona": {
+            "description": "Orașul sau județul, dacă omul vrea vizibilitate locală: Brașov, Maramureș",
+            "type": "string",
+            "maxLength": 60
+          },
+          "campaign": {
+            "description": "Tipul de campanie. Implicit SEO",
+            "type": "string",
+            "enum": [
+              "SEO",
+              "BRAND_AWARENESS",
+              "PRESS_RELEASE",
+              "BRAND_MENTION",
+              "CASINO",
+              "CRYPTO",
+              "ADULT"
+            ]
+          },
+          "bugetCuTva": {
+            "description": "Bugetul include TVA. Implicit da",
+            "type": "boolean"
+          },
+          "exclude": {
+            "description": "Domenii de ocolit: lista `exclude` din răspunsul anterior, sau ce nu vrea omul",
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          "minDa": {
+            "description": "DA minim cerut de om",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "minDr": {
+            "description": "DR minim cerut de om",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "doarMari": {
+            "description": "Doar publicații mari (DR și DA de cel puțin 40), la cererea omului",
+            "type": "boolean"
+          },
+          "language": {
+            "description": "Limba publicațiilor. Implicit ro",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2
+          },
+          "doarDofollow": {
+            "description": "Doar linkuri dofollow. Implicit da la SEO",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "bugetLei"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "posibil": {
+            "description": "boolean. False when the budget is too small for any publication."
+          },
+          "rezumat": {
+            "description": "string. One-line summary to show the user."
+          },
+          "pachete": {
+            "description": "array. Packages (recommended mix, premium, economy), each with publications, total with and without VAT."
+          },
+          "articoleMaxime": {
+            "description": "number. Most articles the budget allows."
+          },
+          "cotaTvaProcente": {
+            "description": "number. VAT rate used for totals."
+          },
+          "exclude": {
+            "description": "array of string. Send back as `exclude` to get different publications."
+          },
+          "deRetinut": {
+            "description": "array of string. Conditions to tell the user."
+          },
+          "atentie": {
+            "description": "string. Warning to tell the user, if any."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "how_it_works",
+      "title": "Cum funcționează",
+      "description": "Cum se publică pe platformă, ce e programul gratuit pentru ONG-uri și instituții și cum se conectează un asistent. Merge fără cont.\n\nUse when the user asks how publishing, payment, subscriptions or the programme for NGOs and public institutions work, or how to connect an assistant. Do not use when the question is about a specific site or price.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "publicare": {
+            "description": "array of string. How publishing works, step by step."
+          },
+          "conectare": {
+            "description": "object. What works without an account and what needs one."
+          },
+          "preturi": {
+            "description": "string"
+          },
+          "plata": {
+            "description": "string. Payment methods."
+          },
+          "abonamente": {
+            "description": "object. Subscriptions and their packages."
+          },
+          "programGratuit": {
+            "description": "object. Programme for NGOs and public institutions: who qualifies, limits, how to apply."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "list_own_network",
+      "title": "Rețeaua proprie",
+      "description": "Rețeaua Comunicate.eu: câte publicații are, câte sunt ale partenerilor și care sunt cele din rețea, filtrate. Merge fără cont.\n\nUse when the user explicitly asks about the Comunicate.eu own network of publications. Do not use when choosing sites in general: use search_catalog or plan_budget, which cover the whole catalogue.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "niche": {
+            "description": "Slug sau nume de nișă (ex. sanatate, business)",
+            "type": "string",
+            "maxLength": 60
+          },
+          "search": {
+            "description": "Text în nume sau descriere",
+            "type": "string",
+            "maxLength": 120
+          },
+          "campaign": {
+            "description": "Doar publicațiile care acceptă tipul",
+            "type": "string",
+            "enum": [
+              "SEO",
+              "BRAND_AWARENESS",
+              "PRESS_RELEASE",
+              "BRAND_MENTION",
+              "CASINO",
+              "CRYPTO",
+              "ADULT"
+            ]
+          },
+          "minDa": {
+            "description": "DA minim (Domain Authority). Ex.: 30",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "maxPriceCents": {
+            "description": "Preț maxim pe tipul ales (implicit SEO), în cenți, fără TVA",
+            "type": "integer",
+            "minimum": 0
+          },
+          "limit": {
+            "description": "Câte publicații pe pagină. Ex.: 20",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120
+          },
+          "cursor": {
+            "description": "De unde continuă lista: valoarea `nextCursor` din răspunsul anterior. Lipsă sau 0 = prima pagină.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "doarNume": {
+            "description": "Doar numele publicațiilor: lista întreagă, scurtă",
+            "type": "boolean"
+          }
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "publications": {
+            "description": "array. Own-network publications with slug, domain, niche, DA/DR, price, turnaround."
+          },
+          "total": {
+            "description": "number. Publications matching the filters."
+          },
+          "totalCatalog": {
+            "description": "number. All publications in the catalogue."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "get_own_publication",
+      "title": "O publicație din rețeaua proprie",
+      "description": "Detaliile unei publicații din rețeaua proprie, cu rubricile ei. Merge fără cont.\n\nUse when the user asks about one publication of the own network, by its slug from list_own_network. Do not use for other catalogue sites: use get_site with the site id.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "description": "Slug-ul publicației din list_own_network: domeniul cu cratime. Ex.: topantreprenor-ro"
+          },
+          "locale": {
+            "description": "Limba textelor: ro (implicit) sau en.",
+            "type": "string",
+            "enum": [
+              "ro",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "slug"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "description": "string"
+          },
+          "name": {
+            "description": "string"
+          },
+          "url": {
+            "description": "string"
+          },
+          "description": {
+            "description": "string"
+          },
+          "niches": {
+            "description": "array of string"
+          },
+          "metricDa": {
+            "description": "number"
+          },
+          "metricDr": {
+            "description": "number"
+          },
+          "marking": {
+            "description": "string. How the publication labels paid content."
+          },
+          "terms": {
+            "description": "array. Price, link policy and turnaround per campaign type."
+          },
+          "topics": {
+            "description": "array of string. Editorial sections."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "whoami",
+      "title": "Cine sunt",
+      "description": "Organizația din spatele cheii, permisiunile ei și dacă asistenții AI pot comanda și publica.\n\nUse when you need to know which organisation the key belongs to, its permissions, or whether AI assistants may order. Do not use without an API key or OAuth connection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "organization": {
+            "description": "object {id, name}. The organisation the key belongs to."
+          },
+          "scopes": {
+            "description": "array of string. Permissions of the key."
+          },
+          "aiPublishing": {
+            "description": "boolean. Whether AI assistants may place paid orders."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "get_balance",
+      "title": "Sold",
+      "description": "Creditele disponibile pe fiecare pachet și soldul în bani (cenți, fără TVA).\n\nUse when the user asks about credits, subscriptions or money left, or before ordering. Do not use without an account.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "credits": {
+            "description": "array of {packageName, available, total}. Package credits (1 credit = 1 publication)."
+          },
+          "money": {
+            "description": "object {availableCents, currency}. Money balance, in bani (1/100 leu)."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "search_catalog",
+      "title": "Caută în catalog",
+      "description": "Site-urile pe care se poate publica, cu preț pe tip de campanie (cenți, fără TVA), DR/DA, nișe și cum ar plăti organizația (credit, bani, indisponibil). `preturi` dă minimul, mediana și maximul pe toate rezultatele. Cu `niche` arată doar publicațiile care chiar se ocupă de nișă; `siSiteGenerale: true` adaugă și site-urile generale cu o rubrică pe tema asta. Implicit 10, paginat cu cursor.\n\nUse when the user wants to browse or filter publications by niche, price, DR/DA or name. Do not use when the user states a budget and wants a ready plan: use plan_budget.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "description": "Text în nume, adresă sau descriere",
+            "type": "string",
+            "maxLength": 120
+          },
+          "niche": {
+            "description": "Slug sau nume de nișă (ex. sanatate, business)",
+            "type": "string",
+            "maxLength": 60
+          },
+          "campaign": {
+            "description": "Tipul de campanie; lista, prețul și filtrele de preț se raportează la el. Implicit SEO",
+            "type": "string",
+            "enum": [
+              "SEO",
+              "BRAND_AWARENESS",
+              "PRESS_RELEASE",
+              "BRAND_MENTION",
+              "CASINO",
+              "CRYPTO",
+              "ADULT"
+            ]
+          },
+          "language": {
+            "description": "Limba publicațiilor. Implicit ro",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2
+          },
+          "minDr": {
+            "description": "DR minim (Domain Rating). Ex.: 30",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "minDa": {
+            "description": "DA minim (Domain Authority). Ex.: 30",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "maxPriceCents": {
+            "description": "Preț maxim pe tipul ales, în cenți, fără TVA",
+            "type": "integer",
+            "minimum": 0
+          },
+          "affordableOnly": {
+            "description": "Doar site-urile pe care organizația le poate plăti acum (cere cheie)",
+            "type": "boolean"
+          },
+          "sort": {
+            "description": "Ordinea: DR_DESC (implicit), DA_DESC, PRICE_ASC, PRICE_DESC sau NAME_ASC.",
+            "type": "string",
+            "enum": [
+              "DR_DESC",
+              "DA_DESC",
+              "PRICE_ASC",
+              "PRICE_DESC",
+              "NAME_ASC"
+            ]
+          },
+          "siSiteGenerale": {
+            "description": "Cu `niche`: include și site-urile generale care doar au o rubrică pe tema asta",
+            "type": "boolean"
+          },
+          "cursor": {
+            "description": "De unde continuă lista: valoarea `nextCursor` din răspunsul anterior. Lipsă sau 0 = prima pagină.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "limit": {
+            "description": "Câte rezultate pe pagină (fără cont, cel mult 20). Ex.: 10",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          }
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "description": "array. Publications: id, name, url, niches, DA/DR, price per campaign type (cents, VAT excluded)."
+          },
+          "total": {
+            "description": "number. Matches (the public search shows the first 120)."
+          },
+          "preturi": {
+            "description": "object. Min, median and max price of the matches, in cents."
+          },
+          "nota": {
+            "description": "string. Note to tell the user."
+          },
+          "nextCursor": {
+            "description": "number|string|null. Pass it as `cursor` to get the next page; null on the last page."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "get_site",
+      "title": "Un site din catalog",
+      "description": "Detaliile unui site după id: prețuri și linkuri pe tip de campanie, reguli, condițiile publicației dacă are. Merge fără cont; cu cheie arată și cum ar plăti organizația.\n\nUse when you have a site id and need its prices per campaign type, link terms and rules before ordering. Do not use for browsing many sites: use search_catalog.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Site-ul, din search_catalog, get_niche sau plan_budget."
+          }
+        },
+        "required": [
+          "siteId"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "string"
+          },
+          "name": {
+            "description": "string"
+          },
+          "url": {
+            "description": "string"
+          },
+          "niches": {
+            "description": "array of string"
+          },
+          "da": {
+            "description": "number"
+          },
+          "dr": {
+            "description": "number"
+          },
+          "priceCentsByCampaign": {
+            "description": "object. Price per campaign type, in cents, VAT excluded."
+          },
+          "linkPolicyByCampaign": {
+            "description": "object. Link attribute per campaign type."
+          },
+          "maxLinksByCampaign": {
+            "description": "object. Most links allowed per campaign type."
+          },
+          "refuzaTextAi": {
+            "description": "boolean. True when the site only accepts text rewritten by a person."
+          },
+          "reguliGenerale": {
+            "description": "string. Site rules."
+          },
+          "payment": {
+            "description": "object. With an account: whether a package or the balance can pay for it."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "list_campaign_types",
+      "title": "Tipuri de campanie",
+      "description": "Ce înseamnă fiecare tip (SEO, brand awareness, comunicat…) și ce e obligatoriu sau interzis în text. Merge fără cont.\n\nUse when you need to explain or check what a campaign type requires (press release, SEO, brand awareness…). Do not use when checking a concrete text: use check_article_fit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "array of {id, rezumat, obligatoriu, interzis}. What each campaign type requires and forbids."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "list_articles",
+      "title": "Articolele organizației",
+      "description": "Lista articolelor (ciorne și publicate), paginată.\n\nUse when the user asks about their drafts or articles, or you need an article id. Do not use when you already have the id: use get_article.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "description": "De unde continuă lista: valoarea `nextCursor` din răspunsul anterior. Lipsă sau 0 = prima pagină.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "limit": {
+            "description": "Câte rezultate pe pagină. Ex.: 10",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "array of {id, title, status, version}. Drafts and articles of the organisation."
+          },
+          "nextCursor": {
+            "description": "number|string|null. Pass it as `cursor` to get the next page; null on the last page."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "get_article",
+      "title": "Un articol",
+      "description": "Articolul întreg, cu conținutul HTML și metadatele SEO.\n\nUse when you need the full text and SEO fields of one article. Do not use when listing: use list_articles.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Articolul, din list_articles sau create_article."
+          }
+        },
+        "required": [
+          "articleId"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "string"
+          },
+          "title": {
+            "description": "string"
+          },
+          "status": {
+            "description": "string. DRAFT, READY, PUBLISHED…"
+          },
+          "contentHtml": {
+            "description": "string"
+          },
+          "seoTitle": {
+            "description": "string"
+          },
+          "metaDescription": {
+            "description": "string"
+          },
+          "focusKeyword": {
+            "description": "string"
+          },
+          "tags": {
+            "description": "array of string"
+          },
+          "version": {
+            "description": "number"
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "create_article",
+      "title": "Creează o ciornă de articol",
+      "description": "Salvează un articol ca ciornă în cont (nu publică nimic). Conținutul e HTML. Pentru mai multe publicații recomandăm texte unice, câte unul pe site. Comunicatele cer minimum 100 de cuvinte, articolele SEO minimum 150 și un link extern. Nu costă nimic.\n\nUse when the user provides or asks you to write a text that should be saved as a draft. Do not use when changing an existing draft: use update_article.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300,
+            "description": "Titlul articolului."
+          },
+          "contentHtml": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500000,
+            "description": "Corpul articolului, HTML curat (p, h2, h3, ul, a, strong, em, img)"
+          },
+          "excerpt": {
+            "description": "Rezumatul articolului.",
+            "type": "string",
+            "maxLength": 1000
+          },
+          "metaDescription": {
+            "description": "Meta descrierea, ideal 140–160 de caractere, încheiată cu punct.",
+            "type": "string",
+            "maxLength": 320
+          },
+          "seoTitle": {
+            "description": "Titlul SEO (eticheta title), ideal sub 60 de caractere.",
+            "type": "string",
+            "maxLength": 200
+          },
+          "focusKeyword": {
+            "description": "Cuvântul-cheie principal al articolului. Ex.: implant dentar Cluj",
+            "type": "string",
+            "maxLength": 120
+          },
+          "tags": {
+            "description": "Cel mult 3 etichete",
+            "maxItems": 3,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 60
+            }
+          },
+          "featuredImageUrl": {
+            "description": "Imaginea principală, adresă publică",
+            "type": "string",
+            "format": "uri"
+          },
+          "campaignId": {
+            "description": "Campania (planul editorial) în care intră",
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "title",
+          "contentHtml"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "string. The new draft."
+          },
+          "title": {
+            "description": "string"
+          },
+          "status": {
+            "description": "string"
+          },
+          "version": {
+            "description": "number"
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "update_article",
+      "title": "Modifică un articol",
+      "description": "Schimbă titlul, conținutul sau metadatele unei ciorne. Trimite doar câmpurile care se schimbă.\n\nUse when changing the title, content or SEO fields of an existing draft. Do not use when creating a new article: use create_article.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Articolul, din list_articles sau create_article."
+          },
+          "title": {
+            "description": "Titlul nou. Lipsă = rămâne cel vechi.",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300
+          },
+          "contentHtml": {
+            "description": "Corpul nou, HTML curat (p, h2, h3, ul, a, strong, em, img); înlocuiește conținutul vechi.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500000
+          },
+          "excerpt": {
+            "description": "Rezumatul articolului.",
+            "type": "string",
+            "maxLength": 1000
+          },
+          "metaDescription": {
+            "description": "Meta descrierea, ideal 140–160 de caractere, încheiată cu punct.",
+            "type": "string",
+            "maxLength": 320
+          },
+          "seoTitle": {
+            "description": "Titlul SEO (eticheta title), ideal sub 60 de caractere.",
+            "type": "string",
+            "maxLength": 200
+          },
+          "focusKeyword": {
+            "description": "Cuvântul-cheie principal al articolului. Ex.: implant dentar Cluj",
+            "type": "string",
+            "maxLength": 120
+          },
+          "tags": {
+            "description": "Cel mult 3 etichete; înlocuiesc lista veche.",
+            "maxItems": 3,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 60
+            }
+          },
+          "featuredImageUrl": {
+            "description": "Imaginea principală, adresă publică https.",
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "articleId"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "readOnlyHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "string"
+          },
+          "title": {
+            "description": "string"
+          },
+          "status": {
+            "description": "string"
+          },
+          "version": {
+            "description": "number. Incremented on each change."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "check_article_seo",
+      "title": "Analiză SEO",
+      "description": "Cât de bine e scris textul ca articol SEO: număr de cuvinte, linkuri, titluri, imagine, meta. Fiecare constatare are `deFacut`. Scorul nu spune dacă textul poate fi publicat pe un anumit tip de campanie.\n\nUse when the user wants feedback on how well a text is written for SEO. Do not use when checking whether it meets a campaign type: use check_article_fit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Articolul, din list_articles sau create_article."
+          }
+        },
+        "required": [
+          "articleId"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "description": "number 0–100. Share of SEO checks passed; not a ranking promise."
+          },
+          "issues": {
+            "description": "array of {code, severity, deFacut}. Findings, each with what to fix."
+          },
+          "stats": {
+            "description": "object. Word count, headings, images, links, keyword count and density, title and meta length."
+          },
+          "outline": {
+            "description": "array of {level, text}. Heading structure."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "check_article_fit",
+      "title": "Potrivirea cu tipul de campanie",
+      "description": "Verifică dacă textul respectă cerințele tipului de campanie (ex. un comunicat are un fapt și un citat; un articol de casino are avertismentul legal) și dacă a rămas ceva de completat. `tipDetectat` e doar o sugestie.\n\nUse when you need to know if a draft meets a campaign type’s rules before ordering. Do not use when only the SEO quality matters: use check_article_seo.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Articolul, din list_articles sau create_article."
+          },
+          "campaignType": {
+            "description": "Tipul față de care se verifică textul: SEO, BRAND_AWARENESS, PRESS_RELEASE, BRAND_MENTION, CASINO, CRYPTO sau ADULT. Lipsă = tipul detectat din text.",
+            "type": "string",
+            "enum": [
+              "SEO",
+              "BRAND_AWARENESS",
+              "PRESS_RELEASE",
+              "BRAND_MENTION",
+              "CASINO",
+              "CRYPTO",
+              "ADULT"
+            ]
+          }
+        },
+        "required": [
+          "articleId"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "potrivit": {
+            "description": "boolean. Whether the text meets the campaign type."
+          },
+          "gataDeTrimis": {
+            "description": "boolean. Whether it can be ordered as is."
+          },
+          "blocante": {
+            "description": "number. Blocking findings."
+          },
+          "constatari": {
+            "description": "array of {cod, severitate, mesaj}."
+          },
+          "tipDetectat": {
+            "description": "string. Campaign type suggested by the text."
+          },
+          "deCompletat": {
+            "description": "array of string. Placeholders the user must fill in."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "list_campaigns",
+      "title": "Campaniile (planurile editoriale)",
+      "description": "Campaniile organizației: obiectiv, buget, site-uri permise, articole legate.\n\nUse when the user asks about their editorial plans (campaigns) or you need a campaign id. Do not use for publications: use list_publications.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "Doar campaniile în starea dată: DRAFT, ACTIVE, PAUSED, COMPLETED sau ARCHIVED.",
+            "type": "string"
+          },
+          "cursor": {
+            "description": "De unde continuă lista: valoarea `nextCursor` din răspunsul anterior. Lipsă sau 0 = prima pagină.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "limit": {
+            "description": "Câte rezultate pe pagină. Ex.: 10",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "array of {id, name, status}. Editorial plans of the organisation."
+          },
+          "nextCursor": {
+            "description": "number|string|null. Pass it as `cursor` to get the next page; null on the last page."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "create_campaign",
+      "title": "Creează o campanie (plan editorial)",
+      "description": "Un plan: nume, client, obiectiv, buget în bani sau credite, interval, site-urile permise. Nu cheltuiește nimic; articolele și publicările se leagă de el.\n\nUse when starting an editorial plan for a client: goal, budget, period, allowed sites. Do not use when changing an existing plan: use update_campaign.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150,
+            "description": "Numele campaniei. Ex.: Lansare clinică Cluj, toamna 2026"
+          },
+          "clientName": {
+            "description": "Clientul sau brandul pentru care e campania.",
+            "type": "string",
+            "maxLength": 150
+          },
+          "objective": {
+            "description": "Obiectivul campaniei, pe scurt. Ex.: 10 articole SEO pe nișa sănătate",
+            "type": "string",
+            "maxLength": 500
+          },
+          "notes": {
+            "description": "Planul editorial propriu-zis: teme, calendar, unghiuri",
+            "type": "string",
+            "maxLength": 2000
+          },
+          "startsAt": {
+            "description": "Începutul campaniei. Ex.: 2026-12-01T00:00:00Z",
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "description": "Sfârșitul campaniei. Ex.: 2027-02-28T23:59:59Z",
+            "type": "string",
+            "format": "date-time"
+          },
+          "budgetCents": {
+            "description": "Bugetul în bani (1 leu = 100 de bani), fără TVA. Ex.: 150000 = 1.500 lei",
+            "type": "integer",
+            "minimum": 0
+          },
+          "budgetCredits": {
+            "description": "Bugetul în credite (1 credit = 1 publicare pe un site acoperit de pachet).",
+            "type": "integer",
+            "minimum": 0
+          },
+          "allowedSiteIds": {
+            "description": "Site-urile permise, din search_catalog sau plan_budget.",
+            "maxItems": 500,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "string. The new campaign."
+          },
+          "name": {
+            "description": "string"
+          },
+          "status": {
+            "description": "string"
+          },
+          "articleCount": {
+            "description": "number"
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "update_campaign",
+      "title": "Modifică o campanie",
+      "description": "Schimbă obiectivul, notele, bugetul sau site-urile permise ale unei campanii.\n\nUse when changing the goal, notes, budget, period or allowed sites of an existing campaign. Do not use when creating one: use create_campaign.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "campaignId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Campania, din list_campaigns sau create_campaign."
+          },
+          "name": {
+            "description": "Numele campaniei. Ex.: Lansare clinică Cluj, toamna 2026",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          },
+          "clientName": {
+            "description": "Clientul sau brandul pentru care e campania.",
+            "type": "string",
+            "maxLength": 150
+          },
+          "objective": {
+            "description": "Obiectivul campaniei, pe scurt. Ex.: 10 articole SEO pe nișa sănătate",
+            "type": "string",
+            "maxLength": 500
+          },
+          "notes": {
+            "description": "Planul editorial: teme, calendar, unghiuri; înlocuiește notele vechi.",
+            "type": "string",
+            "maxLength": 2000
+          },
+          "startsAt": {
+            "description": "Începutul campaniei. Ex.: 2026-12-01T00:00:00Z",
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "description": "Sfârșitul campaniei. Ex.: 2027-02-28T23:59:59Z",
+            "type": "string",
+            "format": "date-time"
+          },
+          "budgetCents": {
+            "description": "Bugetul în bani (1 leu = 100 de bani), fără TVA. Ex.: 150000 = 1.500 lei",
+            "type": "integer",
+            "minimum": 0
+          },
+          "budgetCredits": {
+            "description": "Bugetul în credite (1 credit = 1 publicare pe un site acoperit de pachet).",
+            "type": "integer",
+            "minimum": 0
+          },
+          "allowedSiteIds": {
+            "description": "Site-urile permise; înlocuiesc lista veche.",
+            "maxItems": 500,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "campaignId"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "readOnlyHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "string"
+          },
+          "name": {
+            "description": "string"
+          },
+          "status": {
+            "description": "string"
+          },
+          "articleCount": {
+            "description": "number"
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "list_publications",
+      "title": "Publicările",
+      "description": "Publicările organizației cu starea fiecăreia (așteaptă aprobare, în coadă, publicat, eșuat), paginat.\n\nUse when the user asks what was ordered or published and in what state. Do not use when you already have the id: use get_publication.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "Doar publicările în starea dată. Ex.: AWAITING_APPROVAL, QUEUED, SCHEDULED, PUBLISHED, FAILED, CANCELLED",
+            "type": "string"
+          },
+          "cursor": {
+            "description": "De unde continuă lista: valoarea `nextCursor` din răspunsul anterior. Lipsă sau 0 = prima pagină.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "limit": {
+            "description": "Câte rezultate pe pagină. Ex.: 10",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "array of {id, status, publishedUrl, publishedAt}. Ordered publications."
+          },
+          "nextCursor": {
+            "description": "number|string|null. Pass it as `cursor` to get the next page; null on the last page."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "get_publication",
+      "title": "O publicare",
+      "description": "Starea, adresa publicată, motivul unui eșec sau al unei respingeri.\n\nUse when you need the state, live URL or rejection reason of one publication. Do not use when listing: use list_publications.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "publicationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Publicarea, din list_publications sau order_publication."
+          }
+        },
+        "required": [
+          "publicationId"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "string"
+          },
+          "status": {
+            "description": "string. AWAITING_APPROVAL, QUEUED, SCHEDULED, PUBLISHED, FAILED, CANCELLED."
+          },
+          "publishedUrl": {
+            "description": "string|null. Live address, once published."
+          },
+          "publishedAt": {
+            "description": "string|null."
+          },
+          "rejectionReason": {
+            "description": "string|null. Why the publication was refused, if it was."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "order_publication",
+      "title": "Comandă publicarea (cheltuiește)",
+      "description": "Trimite un articol spre publicare pe unul sau mai multe site-uri. Rezervă bani sau credite din cont. Merge doar dacă organizația a pornit „asistenții AI pot comanda și publica\".\n\nUse when the user has explicitly confirmed publishing a specific draft on specific sites, with the total shown. Spends credits or money. Do not use when the user has not confirmed, or to estimate costs: use plan_budget or get_site.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Articolul, din list_articles sau create_article."
+          },
+          "siteIds": {
+            "minItems": 1,
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Site-urile pe care se publică, din search_catalog sau plan_budget."
+          },
+          "campaignType": {
+            "description": "Implicit SEO",
+            "type": "string",
+            "enum": [
+              "SEO",
+              "BRAND_AWARENESS",
+              "PRESS_RELEASE",
+              "BRAND_MENTION",
+              "CASINO",
+              "CRYPTO",
+              "ADULT"
+            ]
+          },
+          "packageTypeId": {
+            "description": "Pachetul din care se plătește, când sunt mai multe",
+            "type": "string",
+            "format": "uuid"
+          },
+          "promoCode": {
+            "description": "Cod de reducere, dacă există",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 40
+          }
+        },
+        "required": [
+          "articleId",
+          "siteIds"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "readOnlyHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "publications": {
+            "description": "array of {id, siteId, status, amountCents, paymentSource}. One per ordered site."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "order_writing",
+      "title": "Comandă redactarea unui articol (cheltuiește)",
+      "description": "Cere echipei platformei să scrie articolul: temă, tip de campanie, lungime, cuvânt-cheie, brand, adresa promovată, fapte. Se plătește din sold. Merge doar cu comutatorul pentru asistenți AI pornit.\n\nUse when the user explicitly asks the platform team to write an article and accepts the cost. Spends money. Do not use when the user brings their own text: use create_article.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "tema": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 200,
+            "description": "Despre ce e articolul. Ex.: Deschiderea unei clinici stomatologice în Cluj"
+          },
+          "campaignType": {
+            "description": "Tipul articolului de scris: SEO, BRAND_AWARENESS, PRESS_RELEASE, BRAND_MENTION, CASINO, CRYPTO sau ADULT.",
+            "type": "string",
+            "enum": [
+              "SEO",
+              "BRAND_AWARENESS",
+              "PRESS_RELEASE",
+              "BRAND_MENTION",
+              "CASINO",
+              "CRYPTO",
+              "ADULT"
+            ]
+          },
+          "cuvinte": {
+            "description": "Lungimea articolului, în cuvinte.",
+            "anyOf": [
+              {
+                "type": "number",
+                "const": 500
+              },
+              {
+                "type": "number",
+                "const": 700
+              },
+              {
+                "type": "number",
+                "const": 1000
+              },
+              {
+                "type": "number",
+                "const": 1500
+              }
+            ]
+          },
+          "cuvantCheie": {
+            "description": "Cuvântul-cheie pe care îl susține articolul (la SEO). Ex.: implant dentar Cluj",
+            "type": "string",
+            "maxLength": 120
+          },
+          "brand": {
+            "description": "Brandul sau firma despre care se scrie.",
+            "type": "string",
+            "maxLength": 120
+          },
+          "adresaPromovata": {
+            "description": "Pagina spre care trimite linkul din articol, adresă https.",
+            "type": "string",
+            "format": "uri"
+          },
+          "fapte": {
+            "description": "Faptele care trebuie să apară (cifre, date, citate), câte unul pe element.",
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 400
+            }
+          },
+          "campaignId": {
+            "description": "Campania în care intră articolul livrat, din list_campaigns.",
+            "type": "string",
+            "format": "uuid"
+          },
+          "note": {
+            "description": "Alte indicații pentru redactor (ton, ce să evite).",
+            "type": "string",
+            "maxLength": 2000
+          },
+          "idempotencyKey": {
+            "description": "O cheie unică aleasă de tine: o comandă repetată cu aceeași cheie nu se plătește de două ori.",
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "tema"
+        ]
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "readOnlyHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "string. The writing order."
+          },
+          "status": {
+            "description": "string"
+          },
+          "priceCents": {
+            "description": "number. Price in bani, VAT excluded."
+          },
+          "articleId": {
+            "description": "string|null. The delivered article, once ready."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "list_writing_orders",
+      "title": "Comenzile de redactare",
+      "description": "Starea comenzilor de redactare și articolele livrate.\n\nUse when the user asks about articles they ordered to be written. Do not use for publications: use list_publications.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "Doar comenzile în starea dată: NOUA, IN_LUCRU, LIVRATA, REFUZATA, ANULATA sau ESUATA.",
+            "type": "string"
+          }
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "array of {id, status, articleId}. Writing orders of the organisation."
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    {
+      "name": "report_summary",
+      "title": "Rezumatul unei perioade",
+      "description": "Publicări, reușite, eșuate, site-uri distincte, credite și bani cheltuiți într-un interval (implicit ultimele 30 de zile).\n\nUse when the user asks for totals over a period: publications, failures, sites, credits and money spent. Do not use for one publication: use get_publication.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "description": "YYYY-MM-DD",
+            "type": "string"
+          },
+          "to": {
+            "description": "YYYY-MM-DD",
+            "type": "string"
+          }
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "description": "string"
+          },
+          "to": {
+            "description": "string"
+          },
+          "publications": {
+            "description": "number"
+          },
+          "published": {
+            "description": "number"
+          },
+          "failed": {
+            "description": "number"
+          },
+          "distinctSites": {
+            "description": "number"
+          },
+          "creditsUsed": {
+            "description": "number"
+          },
+          "moneySpentCents": {
+            "description": "number"
+          },
+          "successRate": {
+            "description": "number. Between 0 and 1."
+          }
+        },
+        "additionalProperties": {}
+      }
+    }
+  ]
+}

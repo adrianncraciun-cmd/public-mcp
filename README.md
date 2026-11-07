@@ -1,5 +1,10 @@
 # Comunicate.eu — MCP server & public API
 
+[![Glama](https://glama.ai/mcp/connectors/eu.comunicate/publishing/badges/score.svg)](https://glama.ai/mcp/connectors/eu.comunicate/publishing)
+[![mcp.market](https://mcp.market/badge/comunicate-publishing.svg)](https://mcp.market/server/comunicate-publishing)
+[![MCP Checkup](https://mcpcheckup.com/badge/comunicate-4742b0/publishing.svg)](https://mcpcheckup.com/check/comunicate-4742b0/publishing)
+[![Listed on PlugMCP](https://plugmcp.ai/api/badge/eu.comunicate-publishing.svg)](https://plugmcp.ai/mcp/eu.comunicate-publishing)
+
 [Citește în română](README.ro.md)
 
 Remote **MCP server** and **HTTP API** for [Comunicate.eu](https://comunicate.eu), a Romanian platform for publishing press releases, advertorials and SEO articles on a catalogue of **3,800+ online publications**, in Romania, Italy and other European markets.
@@ -274,6 +279,22 @@ Twenty-seven tools.
 
 Ordering is off by default. The organisation has a switch for whether AI assistants may spend, and it applies to OAuth tokens on the API as well. Every order is also checked against the balance.
 
+Every tool declares an `outputSchema` and returns `structuredContent`, with annotations for read-only, destructive, idempotent and open-world behaviour. The full definitions, exactly as `tools/list` returns them, are in [`tools.json`](tools.json).
+
+### Discovery
+
+| | |
+|---|---|
+| Server card | <https://app.comunicate.eu/mcp/server-card> |
+| AI catalog | <https://comunicate.eu/.well-known/ai-catalog.json> |
+| MCP descriptor | <https://comunicate.eu/.well-known/mcp.json> |
+| Authentication for agents | <https://comunicate.eu/auth.md> |
+| Agent skill | <https://comunicate.eu/.well-known/agent-skills/index.json> |
+| API catalog (RFC 9727) | <https://comunicate.eu/.well-known/api-catalog> |
+| LLM summary | <https://comunicate.eu/llms.txt> |
+| Pages in Markdown | any page with `Accept: text/markdown`, or <https://comunicate.eu/index.md> |
+| DNS | `_agent.comunicate.eu` TXT (AID) |
+
 ---
 
 ## Public API
@@ -340,9 +361,9 @@ NGOs, schools, universities, hospitals and city halls can publish public interes
 
 ## This repository
 
-Documentation, the registry manifest and the plugin manifests for Claude Code, Cursor and Gemini CLI only. The platform itself is closed source. `server.json` is what is published to the [official MCP registry](https://registry.modelcontextprotocol.io) under the `eu.comunicate` namespace, verified by the key at <https://comunicate.eu/.well-known/mcp-registry-auth>.
+Documentation, the registry manifest, the tool definitions (`tools.json`) and the plugin manifests for Claude Code, Cursor and Gemini CLI only. The platform itself is closed source. `server.json` is what is published to the [official MCP registry](https://registry.modelcontextprotocol.io) under the `eu.comunicate` namespace, verified by the key at <https://comunicate.eu/.well-known/mcp-registry-auth>.
 
-Questions or bug reports about the API: [open an issue](https://github.com/adrianncraciun-cmd/public-mcp/issues) or write to contact@comunicate.eu.
+Questions or bug reports about the API: [open an issue](https://github.com/adrianncraciun-cmd/public-mcp/issues) or write to contact@comunicate.eu. Security reports: see [SECURITY.md](SECURITY.md).
 
 ## Licence
 
