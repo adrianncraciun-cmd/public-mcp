@@ -302,6 +302,15 @@ ONG-urile, școlile, universitățile, spitalele și primăriile pot publica gra
 
 ---
 
+## Comunicate.eu în altă parte
+
+- Site: <https://comunicate.eu>
+- LinkedIn: [Comunicate.eu](https://www.linkedin.com/company/comunicate-eu/)
+- Medium: [@comunicatetop](https://medium.com/@comunicatetop)
+- Telegram: [t.me/comunicate_eu](https://t.me/comunicate_eu)
+
+---
+
 ## Acest depozit
 
 Conține doar documentația, manifestul pentru registru și manifestele de plugin pentru Claude Code, Cursor și Gemini CLI. Platforma nu e open source. `server.json` e publicat în [registrul oficial MCP](https://registry.modelcontextprotocol.io) sub spațiul `eu.comunicate`, verificat prin cheia de la <https://comunicate.eu/.well-known/mcp-registry-auth>.

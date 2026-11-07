@@ -308,6 +308,15 @@ NGOs, schools, universities, hospitals and city halls can publish public interes
 
 ---
 
+## Follow Comunicate.eu
+
+- Website: <https://comunicate.eu>
+- LinkedIn: [Comunicate.eu](https://www.linkedin.com/company/comunicate-eu/)
+- Medium: [@comunicatetop](https://medium.com/@comunicatetop)
+- Telegram: [t.me/comunicate_eu](https://t.me/comunicate_eu)
+
+---
+
 ## This repository
 
 Documentation, the registry manifest and the plugin manifests for Claude Code, Cursor and Gemini CLI only. The platform itself is closed source. `server.json` is what is published to the [official MCP registry](https://registry.modelcontextprotocol.io) under the `eu.comunicate` namespace, verified by the key at <https://comunicate.eu/.well-known/mcp-registry-auth>.
