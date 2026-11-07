@@ -4,6 +4,10 @@
 [![mcp.market](https://mcp.market/badge/comunicate-publishing.svg)](https://mcp.market/server/comunicate-publishing)
 [![MCP Checkup](https://mcpcheckup.com/badge/comunicate-4742b0/publishing.svg)](https://mcpcheckup.com/check/comunicate-4742b0/publishing)
 [![Listed on PlugMCP](https://plugmcp.ai/api/badge/eu.comunicate-publishing.svg)](https://plugmcp.ai/mcp/eu.comunicate-publishing)
+[![mcptry](https://mcptry.com/badge/eu.comunicate/publishing.svg)](https://mcptry.com/servers/eu.comunicate/publishing)
+[![Annalist](https://api.annalist.dev/v1/verify/mcp-badge.svg?name=eu.comunicate%2Fpublishing)](https://annalist.dev/mcp/eu.comunicate/publishing)
+[![protogrid](https://protogrid.dev/badge/eu.comunicate/publishing.svg)](https://protogrid.dev/servers/eu.comunicate/publishing)
+[![MCP server status](https://glimind.com/badge/mcp-registry%2Feu.comunicate%2Fpublishing.svg)](https://glimind.com/server/mcp-registry%2Feu.comunicate%2Fpublishing?ref=badge)
 
 [Read in English](README.md)
 
