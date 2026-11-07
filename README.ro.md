@@ -296,6 +296,27 @@ Prețurile sunt stabilite de fiecare publisher, în bani (1 leu = 100 de bani), 
 
 ---
 
+## Universal Commerce Protocol (UCP)
+
+Catalogul se poate citi și prin [Universal Commerce Protocol](https://ucp.dev), versiunea `2026-08-25`, doar cu capabilitățile de catalog: `dev.ucp.shopping.catalog.search` și `dev.ucp.shopping.catalog.lookup`. Nu există coș sau checkout; comanda se face din cont sau prin serverul MCP de mai sus.
+
+| | |
+|---|---|
+| Profilul de descoperire | `https://comunicate.eu/.well-known/ucp` |
+| REST | `https://app.comunicate.eu/api/v1/ucp` (`POST /catalog/search`, `/catalog/lookup`, `/catalog/product`) |
+| MCP | `https://app.comunicate.eu/mcp/ucp` (`search_catalog`, `lookup_catalog`, `get_product`) |
+
+Fiecare produs e o publicație, iar fiecare variantă e un tip de campanie, cu prețul în bani RON, fără TVA. Fiecare cerere poartă profilul platformei (antetul `UCP-Agent` sau, prin MCP, `meta["ucp-agent"]`). Limitele sunt cele ale catalogului public: cel mult 20 de rezultate pe pagină și primele 120 dintr-o căutare.
+
+```bash
+curl -s https://app.comunicate.eu/api/v1/ucp/catalog/search \
+  -H 'Content-Type: application/json' \
+  -H 'UCP-Agent: profile="https://platforma-ta.example/.well-known/ucp"' \
+  -d '{"query":"turism","pagination":{"limit":5}}'
+```
+
+---
+
 ## Program gratuit pentru ONG-uri și instituții
 
 ONG-urile, școlile, universitățile, spitalele și primăriile pot publica gratuit comunicate de interes public prin programul [Comunicate de interes public](https://comunicate.eu/ro/comunicate-de-interes-public): până la 8 publicări pe lună, pe 19 publicații, cu linkuri nofollow. Conținutul comercial și cel electoral nu intră în program.

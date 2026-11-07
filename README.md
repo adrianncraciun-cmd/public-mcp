@@ -302,6 +302,27 @@ Prices are set by each publisher, in bani (1 leu = 100 bani), without VAT. VAT i
 
 ---
 
+## Universal Commerce Protocol (UCP)
+
+The catalogue is also available through the [Universal Commerce Protocol](https://ucp.dev), version `2026-08-25`, with the catalog capabilities only: `dev.ucp.shopping.catalog.search` and `dev.ucp.shopping.catalog.lookup`. There is no cart or checkout; orders are placed from an account or through the MCP server above.
+
+| | |
+|---|---|
+| Discovery profile | `https://comunicate.eu/.well-known/ucp` |
+| REST | `https://app.comunicate.eu/api/v1/ucp` (`POST /catalog/search`, `/catalog/lookup`, `/catalog/product`) |
+| MCP | `https://app.comunicate.eu/mcp/ucp` (`search_catalog`, `lookup_catalog`, `get_product`) |
+
+Each product is a publication; each variant is a campaign type, with its price in RON minor units (bani), excluding VAT. Every request carries the platform profile (`UCP-Agent` header, or `meta["ucp-agent"]` over MCP). Limits match the public catalogue: at most 20 results per page and the first 120 of a search.
+
+```bash
+curl -s https://app.comunicate.eu/api/v1/ucp/catalog/search \
+  -H 'Content-Type: application/json' \
+  -H 'UCP-Agent: profile="https://your-platform.example/.well-known/ucp"' \
+  -d '{"query":"turism","pagination":{"limit":5},"context":{"language":"en"}}'
+```
+
+---
+
 ## Free programme for NGOs and institutions
 
 NGOs, schools, universities, hospitals and city halls can publish public interest press releases for free through the [Comunicate de interes public](https://comunicate.eu/ro/comunicate-de-interes-public) programme: up to 8 publications a month, on 19 publications, with nofollow links. Commercial and electoral content is excluded.
